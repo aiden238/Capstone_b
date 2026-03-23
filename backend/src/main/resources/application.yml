@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: blackbox-backend
+
+  # ----- DataSource -----
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/blackbox_db}
+    username: ${SPRING_DATASOURCE_USERNAME:blackbox}
+    password: ${SPRING_DATASOURCE_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+
+  # ----- JPA / Hibernate -----
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: public
+
+  # ----- Flyway -----
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+  # ----- Redis -----
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+  # ----- File Upload -----
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# ----- Server -----
+server:
+  port: 8080
+
+# ----- JWT -----
+jwt:
+  secret: ${JWT_SECRET:default-dev-secret-change-in-production-must-be-at-least-32-chars}
+  access-token-expiration: 1800000    # 30 minutes (ms)
+  refresh-token-expiration: 604800000 # 7 days (ms)
+
+# ----- File Storage -----
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:/data/uploads}
+
+# ----- Logging -----
+logging:
+  level:
+    com.blackbox: DEBUG
+    org.springframework.security: DEBUG
+    org.flywaydb: INFO
