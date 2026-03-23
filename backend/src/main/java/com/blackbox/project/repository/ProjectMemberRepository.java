@@ -1,0 +1,20 @@
+package com.blackbox.project.repository;
+
+import com.blackbox.project.entity.ProjectMember;
+import com.blackbox.project.entity.ProjectRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UUID> {
+
+    List<ProjectMember> findAllByProjectId(UUID projectId);
+
+    Optional<ProjectMember> findByProjectIdAndUserId(UUID projectId, UUID userId);
+
+    boolean existsByProjectIdAndUserId(UUID projectId, UUID userId);
+
+    Optional<ProjectMember> findByProjectIdAndUserIdAndRole(UUID projectId, UUID userId, ProjectRole role);
+}

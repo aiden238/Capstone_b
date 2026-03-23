@@ -4,22 +4,20 @@
 
 ---
 
-## Phase 1: 인프라 & 기반 구축 (1~2주)
+## Phase 1: 인프라 & 기반 구축 ✅ 완료 (2026-03-23)
 
-### 🔴 P0 — Docker Compose 인프라 셋업
+### 🔴 P0 — Docker Compose 인프라 셋업 ✅
 - [x] 프로젝트 루트 `docker-compose.yml` 작성 ✅ (2026-03-23)
 - [x] PostgreSQL 16 컨테이너 설정 (`db` 서비스) ✅
 - [x] `pgdata` 볼륨 (DB 영속), `uploads` 볼륨 (파일 저장) ✅
 - [x] Spring Boot Dockerfile 작성 (multi-stage 빌드) ✅
 - [x] Next.js Dockerfile 작성 (standalone 빌드) ✅
 - [x] Nginx 설정 (`/` → frontend, `/api` → backend, `/uploads` → 정적) ✅
-- [x] `docker compose up -d --build` 전체 스택 기동 확인 ✅ (2026-03-23)
-  - 4 컨테이너 (db, backend, frontend, nginx) 전부 정상 가동
-  - Frontend `/` → HTTP 200, Backend `/api/` → HTTP 401 (Spring Security 정상)
+- [x] `docker compose up -d` 로 전체 스택 기동 확인 ✅ (5컨테이너: db, redis, backend, frontend, nginx)
 - [x] `.env` 환경변수 파일 구성 (DB 비밀번호, JWT 시크릿 등) ✅
 - **참조:** `docker.md`
 
-### 🔴 P0 — 프로젝트 초기화
+### 🔴 P0 — 프로젝트 초기화 ✅
 - [x] Spring Boot 프로젝트 생성 (Java 25, Gradle 9.4.1 Groovy DSL) ✅ (2026-03-23)
 - [x] Next.js 프로젝트 생성 (App Router, TypeScript, Tailwind) ✅
 - [ ] GitHub 리포지토리 생성 & 브랜치 전략 확정 (GitHub Flow 선택 — select.md 참조)
@@ -27,12 +25,12 @@
 - [x] **개발 도구 설치 완료** ✅ (2026-03-23)
   - Java 25 (Temurin 25.0.2+10) ✅
   - Node.js 25.8.1 + npm 11.11.0 ✅
-  - Docker Desktop 4.65.0 ✅ (재부팅 후 docker 명령 PATH 활성화)
+  - Docker Desktop 4.65.0 ✅
   - Gradle 9.4.1 (wrapper) ✅
 - [x] `gradle wrapper` + `bootJar` 빌드 성공 ✅ (Lombok 1.18.44로 Java 25 호환)
 - [x] `cd frontend && npm install` 성공 ✅ (Next.js 14.2.35 보안 패치 적용)
 
-### 🔴 P0 — DB 스키마 v1 배포 (Flyway)
+### 🔴 P0 — DB 스키마 v1 배포 (Flyway) ✅
 - [x] Flyway 의존성 추가 & 설정 (build.gradle + application.yml) ✅ (2026-03-23)
 - [x] `V1__init_users.sql` — users 테이블 ✅
 - [x] `V2__init_projects.sql` — projects, project_members 테이블 ✅
@@ -41,32 +39,50 @@
 - [x] `V5__init_activity_logs.sql` — activity_logs 테이블 + 인덱스 ✅
 - [x] `V6__init_file_vault.sql` — file_vault + immutable 트리거 + tamper_detection_log ✅
 - [x] `V7__init_scores_alerts.sql` — contribution_scores, alerts, weight_configs, weight_change_log ✅
-- [x] `docker compose up` 시 Flyway 자동 마이그레이션 확인 ✅ (2026-03-23)
-  - 7개 마이그레이션 모두 성공 적용 (V1~V7)
-  - 15개 테이블 생성 확인 (users, projects, tasks, meetings, activity_logs, file_vault 등)
-  - file_vault 불변 트리거 (UPDATE/DELETE 차단) 정상 동작 검증
+- [x] `docker compose up` 시 Flyway 자동 마이그레이션 확인 ✅ (7개 모두 적용, 15 테이블)
 - **참조:** `docker.md`
 
 ---
 
-## Phase 2: 인증 & 프로젝트 관리 (3~4주)
+## Phase 2: 인증 & 프로젝트 관리 — 🚧 백엔드 코드 완료, API 검증 진행 중 (2026-03-23)
 
-### 🔴 P0 — 백엔드: 인증
-- [ ] User 엔티티 & Repository
-- [ ] 회원가입 API (`POST /api/auth/signup`)
-- [ ] 로그인 API (`POST /api/auth/login`) — JWT 발급
-- [ ] JWT 필터 & SecurityConfig
-- [ ] Refresh Token 로직
-- [ ] 역할 기반 접근 제어 (STUDENT / PROFESSOR / TA)
+### 🔴 P0 — 백엔드: 인증 ✅ 코드 작성 완료
+- [x] User 엔티티 & Repository ✅
+- [x] 회원가입 API (`POST /api/auth/signup`) ✅
+- [x] 로그인 API (`POST /api/auth/login`) — JWT 발급 ✅
+- [x] JWT 필터 & SecurityConfig ✅
+- [x] Refresh Token 로직 (Redis 기반) ✅
+- [x] 역할 기반 접근 제어 (STUDENT / PROFESSOR / TA) ✅
+- [x] Docker 빌드 성공, signup API 201 응답 확인 ✅
 - **참조:** `backend/modules/auth.md`
 
-### 🔴 P0 — 백엔드: 프로젝트 관리
-- [ ] Project CRUD API
-- [ ] 초대 코드 생성 & 참여 API
-- [ ] 멤버 관리 (역할 변경, 탈퇴)
-- [ ] ProjectAccessChecker (LEADER/MEMBER/OBSERVER 권한 검증)
-- [ ] 데이터 수집 동의 기록 API
+### 🔴 P0 — 백엔드: 프로젝트 관리 ✅ 코드 작성 완료
+- [x] Project CRUD API ✅
+- [x] 초대 코드 생성 & 참여 API ✅
+- [x] 멤버 관리 (역할 변경, 탈퇴) ✅
+- [x] ProjectAccessChecker (LEADER/MEMBER/OBSERVER 권한 검증) ✅
+- [x] 데이터 수집 동의 기록 API ✅
 - **참조:** `backend/modules/project.md`
+
+### ⏸️ 중단 지점 — Phase 2 API curl 검증 미완료
+> **재개 시 할 일:**
+> 1. `docker compose up -d --build` 로 전체 스택 재기동
+> 2. Nginx 재시작 (`docker restart blackbox-nginx`) — 502 방지
+> 3. 아래 API 순서대로 curl 테스트:
+>    - `POST /api/auth/signup` ✅ (이미 확인 — 201 success)
+>    - `POST /api/auth/login` → accessToken, refreshToken 받기
+>    - `GET /api/auth/me` (Bearer 토큰 첨부)
+>    - `POST /api/auth/refresh`
+>    - `POST /api/auth/logout`
+>    - `POST /api/projects` → 프로젝트 생성
+>    - `GET /api/projects` → 내 프로젝트 목록
+>    - `POST /api/projects/join` → 초대 코드 참여 (2번째 사용자)
+>    - `GET /api/projects/{id}/members` → 멤버 목록
+>    - `PATCH /api/projects/{id}/members/{memberId}/role` → 역할 변경
+>    - `PATCH /api/projects/{id}/members/me/consent` → 동의 업데이트
+>    - `POST /api/projects/{id}/invite-code` → 초대 코드 재생성
+> 4. 401/403 에러 케이스 검증
+> 5. todo.md 최종 업데이트
 
 ### 🟡 P1 — 프론트엔드: 인증 & 프로젝트
 - [ ] 로그인/회원가입 페이지
