@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class RefreshTokenService {
 
     private static final String KEY_PREFIX = "refresh:";
+    private static final String BLACKLIST_PREFIX = "blacklist:";
     private final StringRedisTemplate redisTemplate;
 
     public RefreshTokenService(StringRedisTemplate redisTemplate) {
@@ -33,5 +34,20 @@ public class RefreshTokenService {
 
     public void delete(UUID userId) {
         redisTemplate.delete(KEY_PREFIX + userId);
+    }
+
+    public void blacklistAccessToken(String token, long ttlMillis) {
+        if (ttlMillis > 0) {
+            redisTemplate.opsForValue().set(
+                    BLACKLIST_PREFIX + token,
+                    "logout",
+                    ttlMillis,
+                    TimeUnit.MILLISECONDS
+            );
+        }
+    }
+
+    public boolean isBlacklisted(String token) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + token));
     }
 }

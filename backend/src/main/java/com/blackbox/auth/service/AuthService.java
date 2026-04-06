@@ -102,8 +102,12 @@ public class AuthService {
         return new LoginResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(UUID userId) {
+    public void logout(UUID userId, String accessToken) {
         refreshTokenService.delete(userId);
+        if (accessToken != null) {
+            long remaining = jwtTokenProvider.getRemainingExpiration(accessToken);
+            refreshTokenService.blacklistAccessToken(accessToken, remaining);
+        }
     }
 
     public UserResponse getMe(UUID userId) {

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.blackbox.auth.jwt.RefreshTokenService;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -23,10 +25,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
+                                   UserRepository userRepository,
+                                   RefreshTokenService refreshTokenService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -35,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtTokenProvider.validateToken(token) && !refreshTokenService.isBlacklisted(token)) {
             UUID userId = jwtTokenProvider.getUserIdFromToken(token);
             String roleStr = jwtTokenProvider.getRoleFromToken(token);
 

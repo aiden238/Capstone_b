@@ -70,6 +70,13 @@ public class JwtTokenProvider {
         return refreshTokenExpiration;
     }
 
+    public long getRemainingExpiration(String token) {
+        Claims claims = parseClaims(token);
+        long expMillis = claims.getExpiration().getTime();
+        long remaining = expMillis - System.currentTimeMillis();
+        return Math.max(remaining, 0);
+    }
+
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(key)

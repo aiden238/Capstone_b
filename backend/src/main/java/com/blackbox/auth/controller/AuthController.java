@@ -4,10 +4,12 @@ import com.blackbox.auth.dto.*;
 import com.blackbox.auth.security.CustomUserDetails;
 import com.blackbox.auth.service.AuthService;
 import com.blackbox.common.dto.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,9 +41,19 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        authService.logout(userDetails.getUserId());
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                    HttpServletRequest request) {
+        String token = extractToken(request);
+        authService.logout(userDetails.getUserId(), token);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
     }
 
     @GetMapping("/me")

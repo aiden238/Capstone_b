@@ -44,9 +44,9 @@
 
 ---
 
-## Phase 2: 인증 & 프로젝트 관리 — 🚧 백엔드 코드 완료, API 검증 진행 중 (2026-03-23)
+## Phase 2: 인증 & 프로젝트 관리 ✅ 완료 (2026-03-30)
 
-### 🔴 P0 — 백엔드: 인증 ✅ 코드 작성 완료
+### 🔴 P0 — 백엔드: 인증 ✅
 - [x] User 엔티티 & Repository ✅
 - [x] 회원가입 API (`POST /api/auth/signup`) ✅
 - [x] 로그인 API (`POST /api/auth/login`) — JWT 발급 ✅
@@ -54,9 +54,11 @@
 - [x] Refresh Token 로직 (Redis 기반) ✅
 - [x] 역할 기반 접근 제어 (STUDENT / PROFESSOR / TA) ✅
 - [x] Docker 빌드 성공, signup API 201 응답 확인 ✅
+- [x] 인증 없이 접근 시 401 반환 (JwtAuthenticationEntryPoint) ✅ (2026-03-30)
+- [x] Logout 시 access token Redis 블랙리스트 등록 ✅ (2026-03-30)
 - **참조:** `backend/modules/auth.md`
 
-### 🔴 P0 — 백엔드: 프로젝트 관리 ✅ 코드 작성 완료
+### 🔴 P0 — 백엔드: 프로젝트 관리 ✅
 - [x] Project CRUD API ✅
 - [x] 초대 코드 생성 & 참여 API ✅
 - [x] 멤버 관리 (역할 변경, 탈퇴) ✅
@@ -64,117 +66,171 @@
 - [x] 데이터 수집 동의 기록 API ✅
 - **참조:** `backend/modules/project.md`
 
-### ⏸️ 중단 지점 — Phase 2 API curl 검증 미완료
-> **재개 시 할 일:**
-> 1. `docker compose up -d --build` 로 전체 스택 재기동
-> 2. Nginx 재시작 (`docker restart blackbox-nginx`) — 502 방지
-> 3. 아래 API 순서대로 curl 테스트:
->    - `POST /api/auth/signup` ✅ (이미 확인 — 201 success)
->    - `POST /api/auth/login` → accessToken, refreshToken 받기
->    - `GET /api/auth/me` (Bearer 토큰 첨부)
->    - `POST /api/auth/refresh`
->    - `POST /api/auth/logout`
->    - `POST /api/projects` → 프로젝트 생성
->    - `GET /api/projects` → 내 프로젝트 목록
->    - `POST /api/projects/join` → 초대 코드 참여 (2번째 사용자)
->    - `GET /api/projects/{id}/members` → 멤버 목록
->    - `PATCH /api/projects/{id}/members/{memberId}/role` → 역할 변경
->    - `PATCH /api/projects/{id}/members/me/consent` → 동의 업데이트
->    - `POST /api/projects/{id}/invite-code` → 초대 코드 재생성
-> 4. 401/403 에러 케이스 검증
-> 5. todo.md 최종 업데이트
+### ✅ Phase 2 API 검증 완료 (2026-03-30)
+> 전체 17개 API 테스트 통과 (`api-test.mjs`):
+> - `POST /api/auth/signup` ✅ 201
+> - `POST /api/auth/login` ✅ 200 (accessToken + refreshToken)
+> - `GET /api/auth/me` ✅ 200
+> - `POST /api/auth/refresh` ✅ 200
+> - `GET /api/auth/me` (no token) ✅ 401
+> - `POST /api/projects` ✅ 201
+> - `GET /api/projects` ✅ 200
+> - `GET /api/projects/:id` ✅ 200
+> - `POST /api/projects/join` ✅ 201
+> - `GET /api/projects/:id/members` ✅ 200
+> - `PATCH /api/projects/:id/members/:id/role` ✅ 200
+> - `PATCH /api/projects/:id/members/me/consent` ✅ 200
+> - `POST /api/projects/:id/invite-code` ✅ 200
+> - `POST /api/auth/logout` ✅ 200
+> - `GET /api/auth/me` (logout 후) ✅ 401 (블랙리스트 작동)
 
-### 🟡 P1 — 프론트엔드: 인증 & 프로젝트
-- [ ] 로그인/회원가입 페이지
-- [ ] JWT 토큰 관리 (Zustand store)
-- [ ] Axios 인터셉터 (토큰 자동 첨부, 갱신)
-- [ ] 프로젝트 목록 페이지
-- [ ] 프로젝트 생성 모달
-- [ ] 초대 코드 참여 페이지
-- [ ] 동의 플로우 온보딩 UI
+### 🟡 P1 — 프론트엔드: 인증 & 프로젝트 ✅ (2026-03-30)
+- [x] 로그인/회원가입 페이지 ✅
+- [x] JWT 토큰 관리 (Zustand store) ✅
+- [x] Axios 인터셉터 (토큰 자동 첨부, 갱신) ✅
+- [x] 프로젝트 목록 페이지 ✅
+- [x] 프로젝트 생성 모달 ✅
+- [x] 초대 코드 참여 페이지 ✅
+- [x] 동의 플로우 온보딩 UI ✅ (2026-04-06) — 프로젝트 진입 시 동의 모달 표시
 - **참조:** `frontend/pages/auth.md`, `frontend/pages/dashboard.md`
 
 ---
 
-## Phase 3: 칸반 & 회의록 (5~6주)
+## Phase 3: 칸반 & 회의록 (5~6주) — ✅ 완료 (2026-03-30)
 
-### 🔴 P0 — 백엔드: 태스크
-- [ ] Task CRUD API (생성/수정/삭제/목록)
-- [ ] 상태 변경 API (TODO → IN_PROGRESS → DONE)
-- [ ] 담당자 배정 API
-- [ ] 태스크 이벤트 → `activity_logs` 자동 기록
+### 🔴 P0 — 백엔드: 태스크 ✅ (2026-03-30)
+- [x] Task CRUD API (생성/수정/삭제/목록) ✅
+- [x] 상태 변경 API (TODO → IN_PROGRESS → DONE) ✅
+- [x] 담당자 배정 API (추가/제거) ✅
+- [x] 태스크 이벤트 → `activity_logs` 자동 기록 ✅ (TASK_CREATE/UPDATE/COMPLETE/DELETE/ASSIGN/UNASSIGN)
+- [x] ActivityLog 엔티티 & 서비스 공통 모듈 생성 ✅
 - **참조:** `backend/modules/task.md`
 
-### 🔴 P0 — 백엔드: 회의록
-- [ ] Meeting CRUD API
-- [ ] 체크인 코드 생성 & 체크인 API
-- [ ] 회의록 작성/수정 API
-- [ ] 액션 아이템 → 태스크 생성 연결
-- [ ] 회의 이벤트 → `activity_logs` 자동 기록
+### 🔴 P0 — 백엔드: 회의록 ✅ (2026-03-30)
+- [x] Meeting CRUD API ✅
+- [x] 체크인 코드 생성 & 체크인 API ✅ (SecureRandom 8자리 코드, 중복 체크인 방지)
+- [x] 회의록 작성/수정 API ✅ (notes, decisions 필드)
+- [x] 액션 아이템 → 태스크 생성 연결 ✅ (2026-04-06) — 결정사항 줄 단위 → 태스크 일괄 생성
+- [x] 회의 이벤트 → `activity_logs` 자동 기록 ✅ (MEETING_CREATE/UPDATE/DELETE/CHECKIN)
 - **참조:** `backend/modules/meeting.md`
 
-### 🟡 P1 — 프론트엔드: 칸반 보드
-- [ ] 3단 칼럼 레이아웃 (To Do / In Progress / Done)
-- [ ] 태스크 카드 컴포넌트
-- [ ] 드래그 앤 드롭 (@dnd-kit)
-- [ ] 태스크 생성/편집 모달
-- [ ] 필터 (담당자, 태그, 우선순위)
+### ✅ Phase 3 Meeting API 검증 완료 (2026-03-30)
+> 전체 13개 테스트 통과 (`meeting-test.mjs`):
+> - `POST /meetings` ✅ 201 (회의 생성 + 체크인코드 자동 생성)
+> - `GET /meetings` ✅ 200 (목록, meetingDate 내림차순)
+> - `GET /meetings/:id` ✅ 200 (상세)
+> - `PATCH /meetings/:id` ✅ 200 (수정 — notes, decisions 저장)
+> - `POST /meetings/:id/checkin` ✅ 200 (user1 체크인)
+> - `POST /meetings/:id/checkin` ✅ 200 (user2 체크인)
+> - `POST /meetings/:id/checkin` ✅ 409 (중복 체크인 거부)
+> - `POST /meetings/:id/checkin` ✅ 400 (잘못된 코드 거부)
+> - `GET /meetings/:id` ✅ 200 (체크인 후 참석자 2명 확인)
+> - `DELETE /meetings/:id` ✅ 200 (삭제)
+> - `GET /meetings` ✅ 200 (삭제 후 1개 확인)
+> - `GET /meetings` ✅ 403 (비멤버 접근 거부)
+
+### 🟡 P1 — 프론트엔드: 칸반 보드 ✅ (2026-03-30)
+- [x] 3단 칼럼 레이아웃 (To Do / In Progress / Done) ✅
+- [x] 태스크 카드 컴포넌트 ✅
+- [x] 드래그 앤 드롭 (@dnd-kit) ✅
+- [x] 태스크 생성/편집 모달 ✅
+- [x] 필터 (담당자, 태그, 우선순위) ✅ (2026-04-06)
 - **참조:** `frontend/pages/board.md`
 
-### 🟡 P1 — 프론트엔드: 회의록
-- [ ] 회의 목록 페이지
-- [ ] 회의 상세 (참석자, 내용, 결정사항)
-- [ ] 체크인 UI (QR 표시 or 링크)
-- [ ] 액션 아이템 → 태스크 생성 버튼
+### 🟡 P1 — 프론트엔드: 회의록 ✅ (2026-03-30)
+- [x] 회의 목록 페이지 ✅
+- [x] 회의 상세 (참석자, 내용, 결정사항) ✅
+- [x] 체크인 UI (코드 입력 모달) ✅
+- [x] 액션 아이템 → 태스크 생성 버튼 ✅ (2026-04-06)
 - **참조:** `frontend/pages/meeting.md`
 
 ---
 
-## Phase 4: Hash Vault & Score Engine (5~7주, Phase 3과 병행)
+## Phase 4: Hash Vault & Score Engine (5~7주, Phase 3과 병행) — ✅ 완료 (2026-03-30)
 
-### 🔴 P0 — 백엔드: Hash Vault (로컬 파일 저장)
-- [ ] FileStorageService (로컬 디스크 저장: `/data/uploads/{projectId}/`)
-- [ ] SHA-256 해시 생성 (HashService)
-- [ ] 파일 업로드 API (`POST /projects/:id/files` — multipart)
-- [ ] `file_vault` INSERT + 버전 관리
-- [ ] 재업로드 시 해시 비교 로직
-- [ ] 파일 다운로드 API (`GET /files/:id/download` — 스트리밍)
-- [ ] 변조 감지 시 `tamper_detection_log` + `alerts` 기록
-- [ ] 파일 이력 조회 API
+### 🔴 P0 — 백엔드: Hash Vault (로컬 파일 저장) ✅ (2026-03-30)
+- [x] FileStorageService (로컬 디스크 저장: `/data/uploads/{projectId}/`) ✅
+- [x] SHA-256 해시 생성 (HashService) ✅
+- [x] 파일 업로드 API (`POST /projects/:id/files` — multipart) ✅
+- [x] `file_vault` INSERT + 버전 관리 ✅
+- [x] 재업로드 시 해시 비교 로직 (중복=기존 반환, 변경=새 버전+변조 로그) ✅
+- [x] 파일 다운로드 API (`GET /files/:id/download` — 스트리밍) ✅
+- [x] 변조 감지 시 `tamper_detection_log` 기록 ✅
+- [x] 파일 이력 조회 API ✅
 - **참조:** `backend/modules/vault.md`
 
-### 🔴 P0 — 백엔드: Score Engine (MVP 버전)
-- [ ] 플랫폼 활동 로그 기반 점수 산출
-- [ ] 팀 평균 기준 정규화 (상한 150 클리핑)
-- [ ] 항목별 점수 계산 (태스크/회의/파일)
-- [ ] 종합 점수 = Σ(항목 × 가중치)
-- [ ] 점수 재계산 스케줄러 (30분 간격 or 이벤트 트리거)
-- [ ] 기본 가중치 설정 (w1=0.30, w2=0.25, w3=0.20, w4=0.25)
+### ✅ Phase 4 Hash Vault API 검증 완료 (2026-03-30)
+> 전체 9개 테스트 통과 (`vault-test.mjs`):
+> - 파일 업로드 201 (SHA-256 + 버전1) ✅
+> - 중복 업로드 → 기존 반환 (동일 ID) ✅
+> - 동일 파일명 + 다른 내용 → 버전2 + 변조 감지 ✅
+> - 파일 목록 200 ✅
+> - 파일 상세 200 ✅
+> - 파일 이력 200 (2개 버전) ✅
+> - 파일 다운로드 200 ✅
+> - 다른 파일 업로드 201 ✅
+> - 비멤버 접근 403 ✅
+
+### 🔴 P0 — 백엔드: Score Engine (MVP 버전) ✅ (2026-03-30)
+- [x] 플랫폼 활동 로그 기반 점수 산출 ✅
+- [x] 팀 평균 기준 정규화 (상한 150 클리핑) ✅
+- [x] 항목별 점수 계산 (태스크/회의/파일/Git) ✅
+- [x] 종합 점수 = Σ(항목 × 가중치) ✅
+- [x] 점수 재계산 API (수동 트리거) ✅
+- [x] 기본 가중치 설정 (w1=0.30, w2=0.25, w3=0.20, w4=0.25) ✅
+- [x] 가중치 변경 API (교수/TA 전용) + 변경 로그 기록 ✅
 - **참조:** `backend/modules/score.md`
 
-### 🔴 P0 — 백엔드: 경보 시스템 (규칙 기반)
-- [ ] 불균형 감지 (점수 편차 > 40%)
-- [ ] 이탈 감지 (2주 연속 활동 없음)
-- [ ] 과부하 감지 (1인이 60% 이상)
-- [ ] 경보 생성 → `alerts` 테이블
+### ✅ Phase 4 Score Engine API 검증 완료 (2026-03-30)
+> 전체 16개 테스트 통과 (`score-test.mjs`):
+> - 전체 점수 조회 200 (자동 계산) ✅
+> - 활발한 학생 점수 > 0 ✅
+> - 비활동 학생 점수 = 0 ✅
+> - 내 점수 조회 200 ✅
+> - 가중치 조회 200 (기본값) ✅
+> - 가중치 변경 200 (교수) ✅
+> - 학생 가중치 변경 거부 403 ✅
+> - 잘못된 가중치 합 거부 400 ✅
+> - 재계산 200 (변경된 가중치 반영) ✅
+> - 비멤버 접근 403 ✅
+
+### 🔴 P0 — 백엔드: 경보 시스템 (규칙 기반) ✅ (2026-03-30)
+- [x] 불균형 감지 (FREE_RIDE: 팀 평균의 40% 이하) ✅
+- [x] 이탈 감지 (DROPOUT: 2주 연속 활동 없음) ✅
+- [x] 과부하 감지 (OVERLOAD: 1인이 60% 이상) ✅
+- [x] 점수 조작 의심 감지 (GAMING_SUSPECT: 30분 내 15건+) ✅
+- [x] 경보 생성 → `alerts` 테이블 ✅
+- [x] 경보 조회/읽음처리/전체읽음 API ✅
 - **참조:** `backend/modules/alert.md`
 
-### 🟡 P1 — 프론트엔드: 파일 & 점수
-- [ ] 파일 업로드 UI
-- [ ] 파일 이력 뷰 (Hash Vault 타임라인)
-- [ ] 내 기여도 요약 카드
+### ✅ Phase 4 Alert System API 검증 완료 (2026-03-30)
+> 전체 15개 테스트 통과 (`alert-test.mjs`):
+> - 경보 감지 실행 200 (FREE_RIDE + OVERLOAD 2건) ✅
+> - 전체 경보 조회 200 ✅
+> - 읽지 않은 경보 조회 200 ✅
+> - 카운트 조회 200 ✅
+> - 읽음 처리 200 + 카운트 감소 ✅
+> - 전체 읽음 200 + 카운트 = 0 ✅
+> - 비멤버 접근 403 ✅
+
+### 🟡 P1 — 프론트엔드: 파일 & 점수 ✅ (2026-03-30)
+- [x] 파일 업로드 UI (드래그앤드롭, 다중파일) ✅
+- [x] 파일 이력 뷰 (버전별 해시/크기/업로더 표시) ✅
+- [x] 파일 다운로드 (blob 스트리밍) ✅
+- [x] 내 기여도 요약 카드 (점수 페이지 + 레이더 차트) ✅
 - **참조:** `frontend/pages/vault.md`, `frontend/pages/analytics.md`
 
 ---
 
-## Phase 5: 교수 대시보드 & MVP 마무리 (7~8주)
+## Phase 5: 교수 대시보드 & MVP 마무리 (7~8주) — 프론트엔드 ✅ 완료 (2026-03-30)
 
-### 🔴 P0 — 프론트엔드: 교수 대시보드
-- [ ] 팀 목록 오버뷰 (카드 뷰)
-- [ ] 팀 상세: 기여도 바 차트 (Recharts)
-- [ ] 프로젝트 진행률 표시
-- [ ] 경보 뱃지 & 목록
-- [ ] 건강도 지표 (🟢🟡🟠🔴)
+### 🔴 P0 — 프론트엔드: 교수 대시보드 ✅ (2026-03-30)
+- [x] 팀 목록 오버뷰 (카드 뷰, 건강도 기준 정렬) ✅
+- [x] 팀 상세: 기여도 바 차트 (Recharts BarChart + RadarChart) ✅
+- [x] 프로젝트 진행률 표시 (ProgressBar done/total) ✅
+- [x] 경보 뱃지 & 목록 (unread count, 타입별 아이콘/색상) ✅
+- [x] 건강도 지표 (🟢양호 🟡주의 🔴위험) ✅
+- [x] 백엔드: Dashboard Overview API (`GET /api/dashboard/overview`) ✅
 - **참조:** `frontend/pages/professor.md`
 
 ### 🔴 P0 — Docker 배포 안정화

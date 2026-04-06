@@ -24,6 +24,20 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "PROJECT_005", "이 작업을 수행할 권한이 없습니다"),
     CANNOT_REMOVE_LEADER(HttpStatus.BAD_REQUEST, "PROJECT_006", "리더는 추방할 수 없습니다"),
 
+    // Task
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "TASK_001", "태스크를 찾을 수 없습니다"),
+
+    // Meeting
+    MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING_001", "회의를 찾을 수 없습니다"),
+    INVALID_CHECKIN_CODE(HttpStatus.BAD_REQUEST, "MEETING_002", "유효하지 않은 체크인 코드입니다"),
+    ALREADY_CHECKED_IN(HttpStatus.CONFLICT, "MEETING_003", "이미 체크인하였습니다"),
+
+    // Vault
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "VAULT_001", "파일을 찾을 수 없습니다"),
+
+    // Score
+    INVALID_WEIGHT_SUM(HttpStatus.BAD_REQUEST, "SCORE_001", "가중치 합이 1.00이어야 합니다"),
+
     // General
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GENERAL_001", "서버 내부 오류가 발생했습니다"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "GENERAL_002", "입력값이 올바르지 않습니다");
