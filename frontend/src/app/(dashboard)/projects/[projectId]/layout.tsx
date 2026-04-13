@@ -11,8 +11,10 @@ const tabs = [
   { href: 'board', label: '칸반 보드', icon: '📋' },
   { href: 'meetings', label: '회의록', icon: '📝' },
   { href: 'files', label: '파일', icon: '📁' },
+  { href: 'timeline', label: '타임라인', icon: '📅' },
   { href: 'scores', label: '기여도', icon: '📊' },
   { href: 'alerts', label: '경보', icon: '🔔', showBadge: true },
+  { href: 'integrations', label: '연동', icon: '🔗' },
   { href: 'members', label: '멤버', icon: '👥' },
 ];
 

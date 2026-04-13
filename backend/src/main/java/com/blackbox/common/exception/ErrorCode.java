@@ -38,6 +38,13 @@ public enum ErrorCode {
     // Score
     INVALID_WEIGHT_SUM(HttpStatus.BAD_REQUEST, "SCORE_001", "가중치 합이 1.00이어야 합니다"),
 
+    // Integration
+    INTEGRATION_NOT_FOUND(HttpStatus.NOT_FOUND, "INTEG_001", "연동 정보를 찾을 수 없습니다"),
+    INTEGRATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "INTEG_002", "이미 연동된 서비스입니다"),
+    MAPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "INTEG_003", "GitHub 사용자 매핑을 찾을 수 없습니다"),
+    MAPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "INTEG_004", "이미 매핑된 사용자입니다"),
+    INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "INTEG_005", "지원하지 않는 연동 제공자입니다"),
+
     // General
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GENERAL_001", "서버 내부 오류가 발생했습니다"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "GENERAL_002", "입력값이 올바르지 않습니다");
