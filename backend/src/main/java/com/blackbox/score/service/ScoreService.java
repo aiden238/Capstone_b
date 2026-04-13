@@ -124,7 +124,9 @@ public class ScoreService {
             ActionType at = log.getActionType();
             BigDecimal w = ACTION_WEIGHTS.getOrDefault(at, BigDecimal.ONE);
             BigDecimal trustMultiplier = log.getTrustLevel() != null ? log.getTrustLevel() : BigDecimal.ONE;
-            BigDecimal points = w.multiply(trustMultiplier);
+            // AI quality_score (0.0–1.5) adjusts raw points when available; default 1.0
+            BigDecimal qualityMultiplier = log.getQualityScore() != null ? log.getQualityScore() : BigDecimal.ONE;
+            BigDecimal points = w.multiply(trustMultiplier).multiply(qualityMultiplier);
 
             if (TASK_ACTIONS.contains(at)) {
                 taskRaw.merge(uid, points, BigDecimal::add);

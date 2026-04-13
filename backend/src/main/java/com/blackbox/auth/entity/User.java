@@ -35,6 +35,12 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "github_username", unique = true, length = 100)
+    private String githubUsername;
+
+    @Column(name = "google_email", unique = true, length = 255)
+    private String googleEmail;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

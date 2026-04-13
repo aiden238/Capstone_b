@@ -38,6 +38,15 @@ public enum ErrorCode {
     // Score
     INVALID_WEIGHT_SUM(HttpStatus.BAD_REQUEST, "SCORE_001", "가중치 합이 1.00이어야 합니다"),
 
+    // GitHub Integration
+    GITHUB_INTEGRATION_NOT_FOUND(HttpStatus.NOT_FOUND, "GITHUB_001", "GitHub 연동 정보를 찾을 수 없습니다"),
+    GITHUB_INTEGRATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "GITHUB_002", "이미 GitHub 저장소가 연동되어 있습니다"),
+    GITHUB_WEBHOOK_INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "GITHUB_003", "Webhook 서명이 유효하지 않습니다"),
+
+    // Google Drive Integration
+    DRIVE_INTEGRATION_NOT_FOUND(HttpStatus.NOT_FOUND, "DRIVE_001", "Google Drive 연동 정보를 찾을 수 없습니다"),
+    DRIVE_CHANNEL_INVALID(HttpStatus.BAD_REQUEST, "DRIVE_002", "유효하지 않은 Drive 채널입니다"),
+
     // General
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GENERAL_001", "서버 내부 오류가 발생했습니다"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "GENERAL_002", "입력값이 올바르지 않습니다");

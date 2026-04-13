@@ -44,13 +44,27 @@ server:
 
 # ----- JWT -----
 jwt:
-  secret: ${JWT_SECRET:default-dev-secret-change-in-production-must-be-at-least-32-chars}
+  secret: ${JWT_SECRET}
   access-token-expiration: 1800000    # 30 minutes (ms)
   refresh-token-expiration: 604800000 # 7 days (ms)
 
 # ----- File Storage -----
 file:
   upload-dir: ${FILE_UPLOAD_DIR:/data/uploads}
+
+# ----- GitHub Integration -----
+github:
+  webhook-secret: ${GITHUB_WEBHOOK_SECRET:}
+
+# ----- Google Drive Integration -----
+google:
+  client-id: ${GOOGLE_CLIENT_ID:}
+  client-secret: ${GOOGLE_CLIENT_SECRET:}
+  redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost/api/oauth/google/callback}
+
+# ----- Claude AI Integration -----
+claude:
+  api-key: ${CLAUDE_API_KEY:}
 
 # ----- Logging -----
 logging:

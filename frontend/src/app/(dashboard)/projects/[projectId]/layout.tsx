@@ -14,6 +14,8 @@ const tabs = [
   { href: 'scores', label: '기여도', icon: '📊' },
   { href: 'alerts', label: '경보', icon: '🔔', showBadge: true },
   { href: 'members', label: '멤버', icon: '👥' },
+  { href: 'timeline', label: '타임라인', icon: '🕐' },
+  { href: 'settings', label: '설정', icon: '⚙️' },
 ];
 
 export default function ProjectLayout({

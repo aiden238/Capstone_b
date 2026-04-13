@@ -17,12 +17,25 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"        # 개발 시 호스트에서 직접 접속용 (프로덕션에서 제거)
+    expose:
+      - "5432"              # 내부 전용 — 프로덕션에서 호스트 노출 금지
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-blackbox}"]
       interval: 5s
       timeout: 5s
+      retries: 5
+
+  # ─── Redis ───
+  redis:
+    image: redis:7-alpine
+    container_name: blackbox-redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 5
 
   # ─── Spring Boot Backend ───
@@ -35,15 +48,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME:-blackbox_db}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-blackbox}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       FILE_UPLOAD_DIR: /data/uploads
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       # 확장 1
-      GITHUB_APP_ID: ${GITHUB_APP_ID:-}
-      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
       GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
@@ -78,11 +93,11 @@ services:
       - backend
     ports:
       - "80:80"
-      # - "443:443"    # SSL 필요 시
+      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro    # SSL 인증서 (generate-self-signed.sh 실행 후)
       - uploads:/data/uploads:ro    # 정적 파일 서빙
-      # - ./nginx/ssl:/etc/nginx/ssl:ro    # SSL 인증서
 
 volumes:
   pgdata:
@@ -294,14 +309,19 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 git clone <repo-url>
 cd team-blackbox
 cp .env.example .env
-# .env 편집하여 실제 비밀번호 설정
+# .env 편집하여 실제 비밀번호 설정 (JWT_SECRET은 openssl rand -hex 32 로 생성)
+nano .env
 
-docker compose -f docker-compose.yml up -d --build
+# self-signed SSL 인증서 생성 (데모 환경)
+bash nginx/ssl/generate-self-signed.sh
+
+# 프로덕션 스택 기동
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
-### 3. SSL (선택)
-- Let's Encrypt + certbot 컨테이너 추가
-- 또는 캡스톤 데모 환경에서는 self-signed 인증서 사용
+### 3. SSL
+- **데모 환경**: `bash nginx/ssl/generate-self-signed.sh` 실행 후 위 명령 사용
+- **프로덕션**: Let's Encrypt + certbot 컨테이너 추가 후 `server.crt`, `server.key` 교체
 
 ---
 

@@ -31,6 +31,8 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/webhooks/**").permitAll()   // GitHub/Drive webhook (서명 자체 검증)
+                        .requestMatchers("/api/oauth/**").permitAll()      // Google OAuth 콜백
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
